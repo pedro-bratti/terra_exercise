@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# Misc
+# ---------------------------------------------------------------------------------------------------------------------
+variable "name_preffix" {
+  description = "Name preffix for resources on AWS"
+  type = string
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS Virtual Private Network
+# ---------------------------------------------------------------------------------------------------------------------
+variable "vpc_cidr_block" {
+  description = "AWS VPC CIDR Block"
+  type = string
+  default = "10.0.0.0/16"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS Subnets
+# ---------------------------------------------------------------------------------------------------------------------
+variable "availability_zones" {
+  type        = list
+  description = "List of availability zones to be used by subnets"
+  default = ["us-east-1", "us-east-2"]
+}
+
+variable "public_subnets_cidrs_per_availability_zone" {
+  type        = list
+  description = "List of CIDRs to use on each availability zone for public subnets"
+  default = ["10.0.0.0/24", "10.0.1.0/24"]
+}
+
+variable "private_subnets_cidrs_per_availability_zone" {
+  type        = list
+  description = "List of CIDRs to use on each availability zone for private subnets"
+  default = ["10.0.3.0/24", "10.0.4.0/24"]
+}
