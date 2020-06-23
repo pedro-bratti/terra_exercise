@@ -128,3 +128,50 @@ resource "aws_route_table_association" "private_internet_route_table_association
     count.index,
   )
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS Subnets - Private - Database
+# ---------------------------------------------------------------------------------------------------------------------
+# Subnets
+
+resource "aws_subnet" "private_db_subnets" {
+  count                   = length(var.availability_zones)
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = element(var.availability_zones, count.index)
+  cidr_block              = element(var.private_db_subnets_cidrs_per_availability_zone, count.index)
+  map_public_ip_on_launch = false
+  tags = {
+    Name = "${var.name_preffix}-private-db-net-${element(var.availability_zones, count.index)}"
+  }
+}
+
+# Private route table
+resource "aws_route_table" "private_db_subnets_route_table" {
+  count  = length(var.availability_zones)
+  vpc_id = aws_vpc.vpc.id
+  tags = {
+    Name = "${var.name_preffix}-private-db-rt-${element(var.availability_zones, count.index)}"
+  }
+}
+
+# Private route to access internet
+resource "aws_route" "private_db_internet_route" {
+  count      = length(var.availability_zones)
+  depends_on = [
+    aws_internet_gateway.internet_gw,
+    aws_route_table.private_db_subnets_route_table,
+  ]
+  route_table_id         = element(aws_route_table.private_db_subnets_route_table.*.id, count.index)
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = element(aws_nat_gateway.nat_gw.*.id, count.index)
+}
+
+# Association of Route Table to Subnets
+resource "aws_route_table_association" "private_db_internet_route_table_associations" {
+  count     = length(var.private_db_subnets_cidrs_per_availability_zone)
+  subnet_id = element(aws_subnet.private_db_subnets.*.id, count.index)
+  route_table_id = element(
+    aws_route_table.private_db_subnets_route_table.*.id,
+    count.index,
+  )
+}

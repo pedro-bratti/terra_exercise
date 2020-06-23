@@ -35,3 +35,9 @@ variable "private_subnets_cidrs_per_availability_zone" {
   description = "List of CIDRs to use on each availability zone for private subnets"
   default = ["10.0.3.0/24", "10.0.4.0/24"]
 }
+
+variable "private_db_subnets_cidrs_per_availability_zone" {
+  type        = list
+  description = "List of CIDRs to use on each availability zone for private subnets"
+  default = ["172.16.1.0/24", "172.16.2.0/24"]
+}
