@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# AWS Virtual Private Network
+# AWS Virtual Private Network - Main
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr_block # The CIDR block for the VPC.
@@ -18,6 +18,20 @@ resource "aws_internet_gateway" "internet_gw" {
   tags = {
     Name = "${var.name_preffix}-internet-gw"
   }
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS DHCP 
+# ---------------------------------------------------------------------------------------------------------------------
+# Add DHCP Options
+resource "aws_vcp_dhcp_options" "dns_resolver" {
+  domain_name_servers = ["AmazonProvidedDNS"]
+}
+
+# associate DHCP with vpc
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+  vpc_id          = "${aws_vpc.vpc.id}"
+  dhcp_options_id = "${aws_vpc_dhcp_options.dns_resolver.id}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -111,7 +125,7 @@ resource "aws_route_table" "private_subnets_route_table" {
 resource "aws_route" "private_internet_route" {
   count      = length(var.availability_zones)
   depends_on = [
-    aws_internet_gateway.internet_gw,
+    aws_nat_gateway.nat_gw,
     aws_route_table.private_subnets_route_table,
   ]
   route_table_id         = element(aws_route_table.private_subnets_route_table.*.id, count.index)
@@ -158,7 +172,7 @@ resource "aws_route_table" "private_db_subnets_route_table" {
 resource "aws_route" "private_db_internet_route" {
   count      = length(var.availability_zones)
   depends_on = [
-    aws_internet_gateway.internet_gw,
+    aws_nat_gateway.nat_gw,
     aws_route_table.private_db_subnets_route_table,
   ]
   route_table_id         = element(aws_route_table.private_db_subnets_route_table.*.id, count.index)

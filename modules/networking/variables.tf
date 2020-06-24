@@ -21,7 +21,6 @@ variable "vpc_cidr_block" {
 variable "availability_zones" {
   type        = list
   description = "List of availability zones to be used by subnets"
-  default = ["us-east-1", "us-east-2"]
 }
 
 variable "public_subnets_cidrs_per_availability_zone" {
@@ -33,11 +32,11 @@ variable "public_subnets_cidrs_per_availability_zone" {
 variable "private_subnets_cidrs_per_availability_zone" {
   type        = list
   description = "List of CIDRs to use on each availability zone for private subnets"
-  default = ["10.0.3.0/24", "10.0.4.0/24"]
+  default = ["10.0.2.0/24", "10.0.3.0/24"]
 }
 
 variable "private_db_subnets_cidrs_per_availability_zone" {
   type        = list
   description = "List of CIDRs to use on each availability zone for private subnets"
-  default = ["172.16.1.0/24", "172.16.2.0/24"]
+  default = ["10.0.4.0/24", "10.0.5.0/24"]
 }

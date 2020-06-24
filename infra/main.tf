@@ -24,6 +24,7 @@ module bastion {
 module networking {
     source = "../modules/networking"
     name_preffix = "pedro_bratti_test"
+    availability_zones = ["us-east-1a", "us-east-1b"]
 }
 
 # Key Pair
